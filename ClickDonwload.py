@@ -101,6 +101,9 @@ for link in l:
     # Exaample wget
     Book = SpringerBooks(link)
     Book.Download()
+    # # Exaample wget and specific folder
+    # Book = SpringerBooks(link)
+    # Book.Download(SaveFolder='/Users/cmcuervol/Desktop/')
 
     # # example manualy
     # Book = SpringerBooks(link)
