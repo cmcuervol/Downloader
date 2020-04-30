@@ -10,8 +10,20 @@ class SpringerBooks():
         self.link = link
         self.driver = webdriver.Firefox(firefox_binary=binary)
         self.driver.get(self.link)
-        # self.base_window = self.driver.window_handles[0]
         self.base_window = self.driver.current_window_handle
+        # Book name
+        name = self.driver.find_element_by_class_name("page-title").text
+        if '\n' in name:
+            name = name.split('\n')[0]
+        if ' ' in name:
+            name = name.replace(' ', '_')
+        if '(' in name:
+            name = name.replace('(', '\(')
+        if ')' in name:
+            name = name.replace(')', '\)')
+        if '&' in name:
+            name = name.replace('&', '\&')
+        self.name = name
         sleep(2)
 
     def Download(self, format='pdf',SaveFolder=None, SaveMethod='wget'):
@@ -26,8 +38,8 @@ class SpringerBooks():
         self.path   = SaveFolder
         if self.path is None:
             self.path = '~/Downloads'
-            print('Download folder is not especifyed... ')
-            print('users Downloads folder will used as route to save the file')
+            print('The download folder is not especified... ')
+            print('users Downloads folder will be used as the route to save the file')
 
         if format == 'all':
             self._DownloadPDF()
@@ -46,6 +58,7 @@ class SpringerBooks():
     def _DownloadPDF(self):
         self.driver.switch_to.window(self.base_window)
         # pdf = self.driver.find_element_by_xpath('/html/body/div[4]/main/article[1]/div/div/div[2]/div[1]/a')
+
         self.pdf = self.driver.find_element_by_partial_link_text("book PDF")
         self.pdf.click()
         sleep(30)
@@ -56,7 +69,7 @@ class SpringerBooks():
 
         sleep(2)
         if self.method == 'wget':
-            os.system(f'wget -P {self.path} {pdf_url}')
+            os.system(f'wget -P {self.path} -O {os.path.join(self.path,self.name)}.pdf {pdf_url}')
             self._CloseAuxTabs()
 
     def _DownloadEPUB(self):
@@ -69,7 +82,7 @@ class SpringerBooks():
             sleep(30)
             epub_url = self.driver.current_url
             if self.method == 'wget':
-                os.system(f'wget -P {self.path} {pdf_url}')
+                os.system(f'wget -P {self.path} -O {os.path.join(self.path,self.name)}.epub {pdf_url}')
                 self._CloseAuxTabs()
 
         except:
@@ -98,7 +111,7 @@ l = ['http://doi.org/10.1007/978-3-319-31650-5',
      'http://doi.org/10.1007/978-981-13-7496-8']
 
 for link in l:
-    # Exaample wget
+    # Example wget
     Book = SpringerBooks(link)
     Book.Download()
     # # Exaample wget and specific folder
