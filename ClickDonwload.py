@@ -6,26 +6,28 @@ from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 binary = FirefoxBinary('/Applications/Firefox.app/Contents/MacOS/firefox-bin')
 
 class SpringerBooks():
-    def __init__(self, link, SaveFolder=None):
+    def __init__(self, link):
         self.link = link
-        self.path = SaveFolder
-        if self.path is None:
-            self.path = '~'
-            print('Download folder is not especifyed... ')
-            print('users home folder will used as route to save the file')
-
         self.driver = webdriver.Firefox(firefox_binary=binary)
         self.driver.get(self.link)
         # self.base_window = self.driver.window_handles[0]
         self.base_window = self.driver.current_window_handle
         sleep(2)
 
-    def Download(self, format='all'):
+    def Download(self, format='pdf',SaveFolder=None, SaveMethod='wget'):
         """
         Method to download files in the specified format
         INPUTS:
-        format : string among this options 'all', 'pdf' and 'epub'
+        format     : string among this options 'all', 'pdf' and 'epub'
+        SaveFolder : absolute path of folder to save the book
+        SaveMethod : Method to save the book, 'wget' or 'manualy'
         """
+        self.method = SaveMethod
+        self.path   = SaveFolder
+        if self.path is None:
+            self.path = '~/Downloads'
+            print('Download folder is not especifyed... ')
+            print('users Downloads folder will used as route to save the file')
 
         if format == 'all':
             self._DownloadPDF()
@@ -37,8 +39,9 @@ class SpringerBooks():
             self._DownloadEPUB()
         else:
             print('Stupid, write an available format in lower case...')
-        # Quit Webdriver
-        # self.driver.quit()
+        if self.method == 'wget':
+            # Quit Webdriver
+            self.driver.quit()
 
     def _DownloadPDF(self):
         self.driver.switch_to.window(self.base_window)
@@ -46,16 +49,15 @@ class SpringerBooks():
         self.pdf = self.driver.find_element_by_partial_link_text("book PDF")
         self.pdf.click()
         sleep(30)
-        # self.driver.switch_to_window(self.driver.window_handles[1])
-        print(self.driver.window_handles)
+
         new_window = [window for window in self.driver.window_handles if window != self.base_window][0]
         self.driver.switch_to.window(new_window)
         pdf_url = self.driver.current_url
-        print(pdf_url)
-        sleep(2)
 
-        # os.system(f'wget -P {self.path} {pdf_url}')
-        # self._CloseAuxTabs()
+        sleep(2)
+        if self.method == 'wget':
+            os.system(f'wget -P {self.path} {pdf_url}')
+            self._CloseAuxTabs()
 
     def _DownloadEPUB(self):
         self.driver.switch_to.window(self.base_window)
@@ -66,9 +68,9 @@ class SpringerBooks():
             self.epub.click()
             sleep(30)
             epub_url = self.driver.current_url
-            # os.system(f'wget -P {self.path} {pdf_url}')
-
-            # self._CloseAuxTabs()
+            if self.method == 'wget':
+                os.system(f'wget -P {self.path} {pdf_url}')
+                self._CloseAuxTabs()
 
         except:
             print('Epub format is not available')
@@ -96,11 +98,13 @@ l = ['http://doi.org/10.1007/978-3-319-31650-5',
      'http://doi.org/10.1007/978-981-13-7496-8']
 
 for link in l:
-
+    # Exaample wget
     Book = SpringerBooks(link)
-    Book.Download(format = 'all')
-    x = input('Enter to close tabs:')
-    Book._CloseAuxTabs()
-    Book.driver.quit()
+    Book.Download()
 
-# Book.Download(format = 'pdf')
+    # # example manualy
+    # Book = SpringerBooks(link)
+    # Book.Download(format='all', SaveMethod='manualy')
+    # x = input('Enter to close tabs:')
+    # Book._CloseAuxTabs()
+    # Book.driver.quit()
