@@ -98,22 +98,30 @@ class SpringerBooks():
         self.driver.switch_to.window(self.base_window)
 
 
-# l = ['http://link.springer.com/openurl?genre=book&isbn=978-3-319-31650-5']
 
 
-l = ['http://doi.org/10.1007/978-3-319-31650-5',
-     'http://doi.org/10.1007/978-981-10-1802-2',
-     'http://doi.org/10.1007/978-3-319-77425-1',
-     'http://doi.org/10.1007/978-981-13-2475-8',
-     'http://doi.org/10.1007/978-3-030-05900-2',
-     'http://doi.org/10.1007/978-981-13-6643-7',
-     'http://doi.org/10.1007/978-3-319-74746-0',
-     'http://doi.org/10.1007/978-981-13-7496-8']
+l = [
+'http://doi.org/10.1007/978-3-319-58715-8',
+'http://doi.org/10.1007/978-981-10-5218-7',
+'http://doi.org/10.1007/978-94-024-1144-7',
+'http://doi.org/10.1007/978-3-319-59978-6',
+'http://doi.org/10.1007/978-3-662-55381-7',
+'http://doi.org/10.1007/978-981-13-0399-9',
+'http://doi.org/10.1007/978-3-319-89292-4',
+'http://doi.org/10.1007/978-3-319-95762-3',
+'http://doi.org/10.1007/978-3-662-56707-4',
+'http://doi.org/10.1007/978-3-319-94313-8',
+'http://doi.org/10.1007/978-3-319-96622-9',
+'http://doi.org/10.1007/978-3-030-01279-3',
+'http://doi.org/10.1007/978-3-030-13005-3',
+'http://doi.org/10.1007/978-3-030-13020-6',
+'http://doi.org/10.1007/978-3-319-68837-4',
+]
 
 for link in l:
     # Example wget
     Book = SpringerBooks(link)
-    Book.Download()
+    Book.Download(SaveFolder='/Users/cmcuervol/Desktop/Behavioral/')
     # # Exaample wget and specific folder
     # Book = SpringerBooks(link)
     # Book.Download(SaveFolder='/Users/cmcuervol/Desktop/')
